@@ -1,11 +1,12 @@
-// 仓库地址：https://github.com/mcbbs-wiki
+'这里的任何JavaScript将为所有用户在每次页面载入时加载';
+'使用typescript编译而成，因此代码看起来可能怪怪的';
+'仓库地址：https://github.com/mcbbs-wiki/Wiki-Common-JS';
 // 添加功能方法：
 // 1、写个函数包起来，然后塞进main()，注意写在两个分割线之间的区域
 // 2、再写一个自执行函数
 /**放在自执行函数中以防污染全局变量 */
 (function () {
     const prefix = '[MCBBSWiki]';
-    // const ver = '0.1.0';
     /**页面数据接口 */
     const mwConfigValue = window.mw.config.values;
     /**用户对页面的操作 */
@@ -40,12 +41,9 @@
     // --------------------------------
     // 主过程
     function main() {
-        log(prefix + 'CommonJS加载中');
-        // 开始计时
-        console.time(prefix + 'CommonJS加载完毕');
         // 添加脚本和样式表
-        addCSSes();
-        addScripts();
+        addCustomCSSes();
+        addCustomScripts();
         // 百度推送
         if (action === 'view')
             // 只推送查看界面，不然百度到的总是杂着源代码、历史记录界面
@@ -54,8 +52,6 @@
         loginForViewNameSpace([3100]);
         // 水印设置
         if (nameSpace === 3100) waterMark('页面废存');
-        // 计时完毕
-        console.time(prefix + 'CommonJS加载完毕');
     }
     /**百度推送 */
     function baiduPush() {
@@ -85,9 +81,19 @@
      * 添加水印到页面上
      * @param str 显示的字符
      */
-    function waterMark(str: string) {
-        const picW = 480,
-            picH = 320;
+    function waterMark(
+        str: string,
+        p?: {
+            fsize: number;
+            width: number;
+            height: number;
+            bold: boolean;
+        }
+    ) {
+        const picW = p?.width ?? 480,
+            picH = p?.height ?? 320,
+            fsize = p?.fsize ?? 40,
+            fbold = p?.bold ?? true;
         // 用CSS控制
         addCSS(
             `
@@ -131,8 +137,6 @@
          * @returns 字符串，图片的BASE64格式
          */
         function textToImg(str: string) {
-            const fsize = 40,
-                fontWeight = true;
             // 构造一个绘图区域
             let canvas = document.createElement('canvas');
             canvas.width = picW;
@@ -143,7 +147,7 @@
             context.fillStyle = '#fff0';
             context.fillRect(0, 0, picW, picH);
             context.fillStyle = '#999';
-            context.font = (fontWeight ? 'bold ' : '') + fsize + 'px sans-serif';
+            context.font = (fbold ? 'bold ' : '') + fsize + 'px sans-serif';
             context.textAlign = 'center';
             context.textBaseline = 'middle';
             context.fillText(str, picW / 2, picH / 2);
@@ -167,13 +171,19 @@
         if (!condition) throw new Error(prefix + ': ' + (msg ?? '发生错误'));
     }
     /**自动添加自定义脚本 */
-    function addScripts() {
+    function addCustomScripts() {
         for (let s of addMyScript) {
             addJS(s, 1);
         }
+        let fn = function () {
+            for (let s of addMyScriptLater) {
+                addJS(s, 1);
+            }
+        };
+        document.readyState === 'loading' ? document.addEventListener('DOMContentLoaded', fn) : fn();
     }
     /**自动添加自定义CSS */
-    function addCSSes() {
+    function addCustomCSSes() {
         for (let s of addMyCSS) {
             addCSS(s, 1);
         }
@@ -223,13 +233,11 @@
         }
         document.body.appendChild(sc);
     }
-    // function safeEval(js: string | (() => void)) {
-    //     if (typeof js === 'string') {
-    //         // 干净安全有效.jpg
-    //         (0, eval)(js);
-    //     } else if (typeof js === 'function') {
-    //         js.call(null);
-    //     }
-    // }
+    // 执行主要代码
+    log(prefix + 'CommonJS加载中');
+    // 开始计时
+    console.time(prefix + 'CommonJS加载完毕');
     main();
+    // 计时完毕
+    console.timeEnd(prefix + 'CommonJS加载完毕');
 })();
