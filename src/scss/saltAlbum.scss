@@ -1,0 +1,94 @@
+$maxHeight: var(--height, 680px);
+$backColor: var(--bgcolor, #fbf2dc);
+$btnWidth: 3rem;
+$smallWidth: calc(33.3% - #{$btnWidth * 2 / 3});
+$smallBorder: calc(-18% + #{$btnWidth / 3});
+$smallBorderR: calc(82% - #{$btnWidth / 3});
+$smallHeight: calc(#{$maxHeight} / 3);
+$smallTop: calc(#{$maxHeight} / 3);
+$bigBorder: $btnWidth * 2;
+$bigWidth: calc(100% - #{$bigBorder * 2});
+.salt-album {
+    position: relative;
+    width: 100%;
+    height: calc(#{$maxHeight} + 1.3rem);
+    overflow: hidden;
+    user-select: none;
+    > * {
+        transition: all 0.4s ease;
+    }
+    #left-btn,
+    #right-btn {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        width: $btnWidth;
+        line-height: $maxHeight;
+        font-size: $btnWidth;
+        text-align: center;
+        cursor: pointer;
+        z-index: 12;
+    }
+    #left-btn {
+        left: 0;
+        background: linear-gradient(90deg, $backColor, $backColor, transparent);
+    }
+    #right-btn {
+        right: 0;
+        background: linear-gradient(270deg, $backColor, $backColor, transparent);
+    }
+    .img-pack {
+        position: absolute;
+        text-align: center;
+        animation: fade-in 0.4s ease;
+        img {
+            display: inline-block;
+            max-width: 100%;
+            max-height: 100%;
+        }
+        .text {
+            position: absolute;
+            bottom: -1.2rem;
+            left: 0;
+            right: 0;
+            font-size: 1rem;
+            line-height: 1rem;
+            text-align: center;
+        }
+    }
+    .img-left,
+    .img-right {
+        width: $smallWidth;
+        height: $smallHeight;
+        top: $smallTop;
+        line-height: $smallHeight;
+        opacity: 0.5;
+        .text {
+            opacity: 0.5;
+        }
+    }
+    .img-left {
+        left: $smallBorder;
+    }
+    .img-right {
+        left: $smallBorderR;
+    }
+    .img-center {
+        left: $bigBorder;
+        top: 0;
+        width: $bigWidth;
+        height: $maxHeight;
+        opacity: 1;
+        line-height: $maxHeight;
+        z-index: 10;
+    }
+}
+@keyframes fade-in {
+    from {
+        transform: translateY(-20px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+    }
+}
